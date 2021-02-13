@@ -7,50 +7,59 @@
 
 AIMPPlayerState::AIMPPlayerState()
 {
-	AbilitySystemComponent = CreateDefaultSubobject<UIMPAbilitySystemComponent>(TEXT("AbilitySystemComp"));
-	AbilitySystemComponent->SetIsReplicated(false);
 
-	AttributeSet = CreateDefaultSubobject<UIMPAttributeSetBase>(TEXT("AttributeSet"));
 }
 
-void AIMPPlayerState::AddNoteEntry(FName RowName)
+void AIMPPlayerState::BeginPlay()
 {
-	if (NoteJournalData)
-	{
-		FIMPNoteEntry* Note = NoteJournalData->FindRow<FIMPNoteEntry>(RowName, "");
+	Super::BeginPlay();
 
-		if (Note)
-		{
-			NotesJournal.AddUnique(*Note);
-		}
-		else
-		{
-			UE_LOG(LogTemp, Error, TEXT("Failed to add new entry! Note probably doesn't exist."));
-		}
-	}
+	log("Playerstate initialized!");
 }
 
-FIMPNoteEntry AIMPPlayerState::GetNoteEntry(const FName NoteID) const
+void AIMPPlayerState::AddNoteToPlayerJournal(const FIMPNoteEntry Note)
 {
-	FIMPNoteEntry* NoteEntry = NoteJournalData->FindRow<FIMPNoteEntry>(NoteID, "");
-
-	if (NoteEntry)
+	if (Note.NoteID == -1)
 	{
-		return *NoteEntry;
+		UE_LOG(LogDataTable, Error, TEXT("Note does not exist! Please double check Note ID and reference the correct note."));
 	}
 	else
 	{
-		FIMPNoteEntry EmptyEntry;
-		EmptyEntry.NoteID = 99999;
-		EmptyEntry.NoteHeading = FText::FromString("Note Heading not found! Double check Note ID!");
-		EmptyEntry.NoteBody = FText::FromString("Note Body not found! Double check Note ID!");
-		EmptyEntry.NoteCategory = ENoteCategory::NC_None;
-
-		return EmptyEntry;
+		if (Note.NoteCategory != ENoteCategory::NC_None)
+		{
+			PlayerNoteJournal.AddUnique(Note);
+		}
+		else
+		{
+			UE_LOG(LogDataTable, Warning, TEXT("Note ID: %i Has a category of None. Please check the entry and set a valid category."), Note.NoteID);
+		}
 	}
 }
 
-UAbilitySystemComponent* AIMPPlayerState::GetAbilitySystemComponent() const
+FIMPNoteEntry AIMPPlayerState::FindNoteEntry(const FName NoteID) const
 {
-	return AbilitySystemComponent;
+	if (NoteDataTable)
+	{
+		FIMPNoteEntry* NoteEntry = NoteDataTable->FindRow<FIMPNoteEntry>(NoteID, "");
+
+		if (NoteEntry)
+		{
+			return *NoteEntry;
+		}
+	}
+	else
+	{
+		UE_LOG(LogDataTable, Error, TEXT("No Data Table Reference set inside the Player State!"));
+	}
+
+	FIMPNoteEntry EmptyEntry;
+
+	EmptyEntry.NoteID = -1;
+	EmptyEntry.NoteHeading = FText::FromString("Note Heading not found! Double check Note ID!");
+	EmptyEntry.NoteBody = FText::FromString("Note Body not found! Double check Note ID!");
+	EmptyEntry.NoteCategory = ENoteCategory::NC_None;
+
+	return EmptyEntry;
 }
+
+

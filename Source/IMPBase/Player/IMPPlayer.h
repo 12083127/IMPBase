@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "AbilitySystemInterface.h"
 #include "GameFramework/Character.h"
-#include "GameplayEffectTypes.h"
 #include "IMPBase/IMPBase.h"
 #include "IMPPlayer.generated.h"
 
@@ -29,9 +28,28 @@ class IMPBASE_API AIMPPlayer : public ACharacter, public IAbilitySystemInterface
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FollowCamera;
 
+	class UAbilitySystemComponent* AbilitySystemComponent;
+	class UIMPAttributeSetBase* AttributeSet;
+
 public:
 	// Sets default values for this character's properties
 	AIMPPlayer();
+
+	static const FName MoveForwardBinding;
+	static const FName MoveRightBinding;
+	static const FName InteractBinding;
+	static const FName DrainBinding;
+	static const FName ChargeBinding;
+	static const FName SprintBinding;
+	static const FName SwitchElementFireBinding;
+	static const FName SwitchElementElectricBinding;
+	static const FName SwitchElementWaterBinding;
+	static const FName SwitchModeBinding;
+	static const FName ImbuementSwitchBinding;
+	static const FName TurnBinding;
+	static const FName TurnRateBinding;
+	static const FName LookUpBinding;
+	static const FName LookUpRateBinding;
 
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
@@ -42,29 +60,35 @@ public:
 	float BaseLookUpRate;
 
 	/*IMP Char Stats*/
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "IMPBase|Attribute")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "IMP Base|Attributes")
 	TSubclassOf<class UGameplayEffect> DefaultAttributes;
 
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "IMPBase|Ability")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "IMP Base|Attributes")
+	TSubclassOf<class UGameplayEffect> StartupEffects;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "IMP Base|Abilities")
 	TArray<TSubclassOf<class UIMPGameplayAbility>> DefaultAbilities;
 
-	UPROPERTY(EditAnywhere, Category = Character)
+	UPROPERTY(EditAnywhere, Category = "IMP Base")
 	class USkeletalMeshSocket* LethalProjectileSocket;
 
-	UPROPERTY(EditAnywhere, Category = Character)
+	UPROPERTY(EditAnywhere, Category = "IMP Base")
 	class UBlueprint* LethalProjectile;
 
 	TArray<float> PlayerEnergyLevels;
 	TArray<float> PlayerEnergyLevelsMax;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Character)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "IMP Base") // blueprint read only?
 	EEnergyType ActiveElement;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Character)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "IMP Base")
 	int32 LethalRoundsPerMinute;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Character)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "IMP Base")
 	float LethalProjectileDamage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "IMP Base")
+	float SprintingSpeed = 1500.f;
 
 	float DrainingRate;
 	float ChargingRate;
@@ -73,21 +97,6 @@ public:
 
 	UPROPERTY(BlueprintReadOnly)
 	FHitResult ShotActor;
-
-	static const FName MoveForwardBinding;
-	static const FName MoveRightBinding;
-	static const FName InteractBinding;
-	static const FName DrainBinding;
-	static const FName ChargeBinding;
-	static const FName SwitchElementFireBinding;
-	static const FName SwitchElementElectricBinding;
-	static const FName SwitchElementWaterBinding;
-	static const FName SwitchModeBinding;
-	static const FName ImbuementSwitchBinding;
-	static const FName TurnBinding;
-	static const FName TurnRateBinding;
-	static const FName LookUpBinding;
-	static const FName LookUpRateBinding;
 
 	/* IMP Functions*/
 	void ModifyPlayerEnergyLevels(EEnergyType EnergyType, float Amount, float DeltaTime);
@@ -103,6 +112,9 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	void Heal(float amount);
+
+	UFUNCTION(BlueprintCallable)
+	void SetIsSprinting(const bool InValue);
 
 	UFUNCTION(BlueprintCallable)
     FORCEINLINE float GetHealthNormalized() { return Health.GetNormalizedValue(); }
@@ -137,9 +149,13 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE EEnergyType GetActiveElement() const { return ActiveElement; }
 
-	virtual void InitializeAttributes();
-	virtual void GiveAbilities();
-	virtual class UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+	UFUNCTION(BlueprintCallable)
+	/** Returns whether the player is dead or not */
+	FORCEINLINE bool IsDead() const { return bDead; }
+
+	UFUNCTION(BlueprintCallable)
+	/** Returns whether the player is sprinting or not */
+	FORCEINLINE bool IsSprinting() const { return bIsSprinting; }
 
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
@@ -147,9 +163,22 @@ public:
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
-	/** Returns whether the player is dead or not*/
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+
+	virtual void InitializeAttributes();
+	virtual void InitializeAbilities();
+
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE bool IsDead() const { return bDead; }
+	float GetStamina() const;
+
+	UFUNCTION(BlueprintCallable)
+	float GetStaminaMax() const;
+
+	UFUNCTION(BlueprintCallable)
+	float GetStaminaNormalized() const;
+
+	UFUNCTION(BlueprintCallable)
+	float GetMaxSpeed() const;
 
 protected:
 
@@ -174,12 +203,10 @@ protected:
 	virtual void BeginPlay() override;
 
 	/* IMP Functions*/
-
-	TWeakObjectPtr<class UIMPAbilitySystemComponent> AbilitySystemComponent;
-	TWeakObjectPtr<class UIMPAttributeSetBase> AttributeSetBase;
-
 	void UseInteractable();
 	void StopInteractable();
+	void StartSprinting();
+	void StopSprinting();
 	void SwitchToFire();
 	void SwitchToElectric();
 	void SwitchToWater();
@@ -230,9 +257,11 @@ private:
 
 	bool bDraining;
 	bool bCharging;
+	bool bIsSprinting;
 	bool bUseImbuedAmmo;
 
-	float InitialWalkSpeed;
+	float InitialWalkSpeed; // const?
+
 
 	// functions
 	void KillPlayer();

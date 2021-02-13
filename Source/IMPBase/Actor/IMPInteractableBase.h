@@ -22,10 +22,10 @@ public:
 	 * Enables/disables a glowing outline effect around the Interactable's mesh, so that it appears to be in focus
 	 * @param bInFocus - set to true to draw a glowing outline around the mesh; false will disable the outline
 	 */
-	void SetInFocus(bool bInFocus);
+	void SetInFocus(const bool bInFocus);
 
-	/** Reference to the Interactables StaticMeshComponent */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "IMP Base|StaticMesh")
+	/** Reference to the Interactables StaticMeshComponent */
 	class UStaticMeshComponent* Mesh;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "IMP Base|Interaction")
@@ -34,20 +34,19 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "IMP Base|Interaction")
 	float InteractTimeSpan;
 
-	/** A placeholder Interface event that defines what happens when interacting with the Interactable. */
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void OnInteract();
-	virtual void OnInteract_Implementation();
-
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void OnInteractStop();
-	virtual void OnInteractStop_Implementation();
-
 	UFUNCTION(BlueprintCallable)
 	float GetInteractionTimeNormalized() const;
 
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE bool IsReadyToInteract() const { return bReadyToInteract; }
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	/** A placeholder Interface event that defines what happens when interacting with the Interactable. */
+	void OnInteract();
+	virtual void OnInteract_Implementation();
+
+	void OnInteractStop();
+	virtual void OnInteractStop_Implementation();
 
 	void ResetInteractionTimer();
 

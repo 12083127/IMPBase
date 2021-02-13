@@ -16,14 +16,14 @@ public:
 
 	AIMPPickupBase();
 
-	/** Whether or not to destroy the Actor when the event OnPickup() fires */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "IMP Base|Interaction|Pickup")
+	/** Whether or not to destroy the Actor when the event OnPickup() fires */
 	bool bDestroyOnPickup;
 
+	UFUNCTION(BlueprintNativeEvent)
 	/** OnPickUp Event handle that will destroy the pickup actor on default when called.
 	  * Further behaviour can be defines inside blueprints by the designer.
 	  */
-	UFUNCTION(BlueprintNativeEvent)
 	void OnPickUp();
 	virtual void OnPickUp_Implementation();
 };

@@ -19,6 +19,6 @@ public:
 
 	UIMPGameplayAbility();
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "IMPBase|Ability")
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "IMP Base|Ability")
 	EIMPAbilityInputID AbilityInputID;
 };

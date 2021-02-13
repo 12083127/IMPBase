@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataTable.h"
-#include "AbilitySystemInterface.h"
 #include "GameFramework/PlayerState.h"
 #include "IMPBase/IMPBase.h"
 #include "IMPPlayerState.generated.h"
@@ -18,13 +17,16 @@ struct FIMPNoteEntry : public FTableRowBase
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int32 NoteID;
+	int32 NoteID;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FText NoteHeading;
+	FText NoteHeading;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FText NoteBody;
+	FText NoteBody;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		ENoteCategory NoteCategory;
+	ENoteCategory NoteCategory;
 
 	// operator overloading to check for duplicates
 	bool operator==(const FIMPNoteEntry& Note) const
@@ -40,7 +42,7 @@ public:
  * 
  */
 UCLASS()
-class IMPBASE_API AIMPPlayerState : public APlayerState, public IAbilitySystemInterface
+class IMPBASE_API AIMPPlayerState : public APlayerState
 {
 	GENERATED_BODY()
 
@@ -48,28 +50,34 @@ public:
 
 	AIMPPlayerState();
 	
-
-	UPROPERTY(VisibleAnywhere, Category = "IMPBase|Player")
-	TArray<FIMPNoteEntry> NotesJournal;
-
-	UFUNCTION(BlueprintCallable)
-	void AddNoteEntry(FName RowName);
+	UPROPERTY(VisibleAnywhere, Category = "IMP Base")
+	/** Holds all the notes the player has found */
+	TArray<FIMPNoteEntry> PlayerNoteJournal;
 
 	UFUNCTION(BlueprintCallable)
-	FIMPNoteEntry GetNoteEntry(const FName NoteID) const;
+	/** Checks if the Note you want to add is valid and adds it to the players journal.
+	 *  @param Note - The note to be added.
+	 */
+	void AddNoteToPlayerJournal(const FIMPNoteEntry Note);
 
-	FORCEINLINE class UDataTable* GetNoteJournalDatabase() const { return NoteJournalData; }
+	UFUNCTION(BlueprintCallable)
+	/** Looks for a Note Entry and returns it as a struct for later use 
+	 *  @param NoteID - NoteID of the note you are looking for.
+	 */
+	FIMPNoteEntry FindNoteEntry(const FName NoteID) const;
 
-	virtual class UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+	//FORCEINLINE class UDataTable* GetNoteJournalDB() const { return NoteDataTable; }
 
 protected:
 
-	UPROPERTY(EditDefaultsOnly, Category = "IMP Base|IMP Player State|Note Journal Data")
-	class UDataTable* NoteJournalData;
-	
-	UPROPERTY(EditAnywhere)
-	class UIMPAbilitySystemComponent* AbilitySystemComponent;
-	
-	UPROPERTY(EditAnywhere)
-	class UIMPAttributeSetBase* AttributeSet;
+	UPROPERTY(EditDefaultsOnly, Category = "IMP Base")
+	/** Reference to the data table that holds all note entries. NoteID and RowName in the data table need to be identical! */
+	const UDataTable* NoteDataTable;
+
+	virtual void BeginPlay() override;
+
+private:
+
+
+
 };

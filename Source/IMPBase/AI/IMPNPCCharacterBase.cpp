@@ -81,7 +81,7 @@ void AIMPNPCCharacterBase::BeginPlay()
 	Faction_Initial = Faction;
 }
 
-void AIMPNPCCharacterBase::SetInFocus(bool bInFocus)
+void AIMPNPCCharacterBase::SetInFocus(const bool bInFocus)
 {
 	GetMesh()->SetRenderCustomDepth(bInFocus);
 }

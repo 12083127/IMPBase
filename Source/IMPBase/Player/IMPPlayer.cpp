@@ -3,6 +3,7 @@
 
 #include "IMPPlayer.h"
 
+#include "AbilitySystemComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
@@ -10,15 +11,18 @@
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
 
+//#include "GameplayEffect.h"
+
 #include "IMPBase/Actor/IMPEnergyActor.h"
 #include "IMPBase/Actor/IMPInteractableBase.h"
 #include "IMPBase/AI/IMPNPCCharacterBase.h"
 #include "IMPBase/AI/IMPNPCCharacterAIBase.h"
-#include "IMPBase/Components/IMPAbilitySystemComponent.h"
+
 #include "IMPBase/Components/IMPEnergyComponent.h"
+
 #include "IMPBase/Utility/IMPAttributeSetBase.h"
-#include "IMPBase/Utility/IMPGameplayAbility.h"
 #include "IMPBase/Utility/IMPInteractInterface.h"
+#include "IMPBase/Utility/IMPGameplayAbility.h"
 
 #include "DrawDebugHelpers.h"
 
@@ -27,6 +31,7 @@ const FName AIMPPlayer::MoveRightBinding("MoveRight");
 const FName AIMPPlayer::InteractBinding("Use");
 const FName AIMPPlayer::DrainBinding("Drain");
 const FName AIMPPlayer::ChargeBinding("Charge");
+const FName AIMPPlayer::SprintBinding("AI_Sprint");
 const FName AIMPPlayer::SwitchElementFireBinding("SwitchElementFire");
 const FName AIMPPlayer::SwitchElementElectricBinding("SwitchElementElectric");
 const FName AIMPPlayer::SwitchElementWaterBinding("SwitchElementWater");
@@ -40,6 +45,8 @@ const FName AIMPPlayer::LookUpRateBinding("LookUpRate");
 // Sets default values
 AIMPPlayer::AIMPPlayer()
 {
+	PrimaryActorTick.bCanEverTick = true;
+
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
@@ -68,10 +75,13 @@ AIMPPlayer::AIMPPlayer()
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
+	
+	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
+	AbilitySystemComponent->SetIsReplicated(false);
 
+	AttributeSet = CreateDefaultSubobject<UIMPAttributeSetBase>(TEXT("AttributeSet"));
 
 	/*Init IMP Player Stats*/
-
 	CurrentInteractable = nullptr;
 	LastKnownInteractable = nullptr;
 	LethalProjectile = nullptr;
@@ -100,6 +110,7 @@ AIMPPlayer::AIMPPlayer()
 	ChargingRate = 25.f;
 
 	bDead = false;
+	bIsSprinting = false;
 	bUseImbuedAmmo = false;
 }
 
@@ -107,12 +118,12 @@ void AIMPPlayer::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (AbilitySystemComponent.IsValid())
+	if (AbilitySystemComponent)
 	{
 		AbilitySystemComponent->InitAbilityActorInfo(this, this);
 
 		InitializeAttributes();
-		GiveAbilities();
+		InitializeAbilities();
 	}
 }
 
@@ -201,40 +212,42 @@ void AIMPPlayer::Tick(float DeltaTime)
 
 	switch (PlayerState)
 	{
-	case EPlayerState::PT_EnergyMode:
-	{
-		if (bCharging && HasActiveElementEnergy())
+		case EPlayerState::PT_EnergyMode:
 		{
-			if (EnergyComponent)
+			if (bCharging && HasActiveElementEnergy())
 			{
-				EEnergyType ComponentEnergyType = EnergyComponent->GetEnergyType();
-				bool bSameElement = ComponentEnergyType == ActiveElement;
-				bool bChargeable = EnergyComponent->IsChargeable();
-
-				if (bSameElement && bChargeable)
+				if (EnergyComponent)
 				{
-					OnChargeEnergy(DeltaTime);
+					EEnergyType ComponentEnergyType = EnergyComponent->GetEnergyType();
+					bool bSameElement = ComponentEnergyType == ActiveElement;
+					bool bChargeable = EnergyComponent->IsChargeable();
+
+					if (bSameElement && bChargeable)
+					{
+						OnChargeEnergy(DeltaTime);
+					}
+				}
+				else
+				{
+					OnShootEnergy(DeltaTime);
 				}
 			}
-			else
-			{
-				OnShootEnergy(DeltaTime);
-			}
+			break;
 		}
-		break;
-	}
-	case EPlayerState::PT_ShootingMode:
-	{
-		if (bCharging)
+
+		case EPlayerState::PT_ShootingMode:
 		{
-			if (GetWorldTimerManager().IsTimerActive(FireRateHandle) && LethalAmmo.Current <= 0)
+			if (bCharging)
 			{
-				GetWorldTimerManager().ClearTimer(FireRateHandle);
+				if (GetWorldTimerManager().IsTimerActive(FireRateHandle) && LethalAmmo.Current <= 0)
+				{
+					GetWorldTimerManager().ClearTimer(FireRateHandle);
+				}
 			}
+			break;
 		}
-		break;
-	}
-	default: break;
+
+		default: break;
 	}
 #pragma endregion
 
@@ -255,10 +268,12 @@ void AIMPPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 
 	PlayerInputComponent->BindAction(InteractBinding, IE_Pressed, this, &AIMPPlayer::UseInteractable);
 	PlayerInputComponent->BindAction(InteractBinding, IE_Released, this, &AIMPPlayer::StopInteractable);
-	//PlayerInputComponent->BindAction(DrainBinding, IE_Pressed, this, &AIMPPlayer::StartDraining);
-	//PlayerInputComponent->BindAction(DrainBinding, IE_Released, this, &AIMPPlayer::StopDraining);
+	PlayerInputComponent->BindAction(DrainBinding, IE_Pressed, this, &AIMPPlayer::StartDraining);
+	PlayerInputComponent->BindAction(DrainBinding, IE_Released, this, &AIMPPlayer::StopDraining);
 	PlayerInputComponent->BindAction(ChargeBinding, IE_Pressed, this, &AIMPPlayer::StartCharging);
 	PlayerInputComponent->BindAction(ChargeBinding, IE_Released, this, &AIMPPlayer::StopCharging);
+	PlayerInputComponent->BindAction(SprintBinding, IE_Pressed, this, &AIMPPlayer::StartSprinting);
+	PlayerInputComponent->BindAction(SprintBinding, IE_Released, this, &AIMPPlayer::StopSprinting);
 	PlayerInputComponent->BindAction(SwitchElementFireBinding, IE_Pressed, this, &AIMPPlayer::SwitchToFire);
 	PlayerInputComponent->BindAction(SwitchElementElectricBinding, IE_Pressed, this, &AIMPPlayer::SwitchToElectric);
 	PlayerInputComponent->BindAction(SwitchElementWaterBinding, IE_Pressed, this, &AIMPPlayer::SwitchToWater);
@@ -274,7 +289,7 @@ void AIMPPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 	PlayerInputComponent->BindAxis("LookUpRate", this, &AIMPPlayer::LookUpAtRate);
 
 	// Initialize GAS Input Binds
-	if (AbilitySystemComponent.IsValid() && InputComponent)
+	if (AbilitySystemComponent && InputComponent)
 	{
 		int32 ConfirmActionID = static_cast<int32>(EIMPAbilityInputID::AI_Confirm);
 		int32 CancelActionID = static_cast<int32>(EIMPAbilityInputID::AI_Cancel);
@@ -282,6 +297,90 @@ void AIMPPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 		const FGameplayAbilityInputBinds Binds("Confirm", "Cancel", "EIMPAbilityInputID", ConfirmActionID, CancelActionID);
 		AbilitySystemComponent->BindAbilityActivationToInputComponent(InputComponent, Binds);
 	}
+}
+
+UAbilitySystemComponent* AIMPPlayer::GetAbilitySystemComponent() const
+{
+	return AbilitySystemComponent;
+}
+
+void AIMPPlayer::InitializeAttributes()
+{
+	if (DefaultAttributes)
+	{
+		FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
+		EffectContext.AddSourceObject(this);
+
+		FGameplayEffectSpecHandle NewHandle = AbilitySystemComponent->MakeOutgoingSpec(DefaultAttributes, 1, EffectContext);
+		if (NewHandle.IsValid())
+		{
+			FActiveGameplayEffectHandle ActiveGEHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*NewHandle.Data.Get());
+		}
+
+		NewHandle = AbilitySystemComponent->MakeOutgoingSpec(StartupEffects, 1, EffectContext);
+		if (NewHandle.IsValid())
+		{
+			FActiveGameplayEffectHandle ActiveGEHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*NewHandle.Data.Get());
+		}
+	}
+}
+
+void AIMPPlayer::InitializeAbilities()
+{
+	for (TSubclassOf<UIMPGameplayAbility>& StartupAbility : DefaultAbilities)
+	{
+		int32 InputID = static_cast<int32>(StartupAbility.GetDefaultObject()->AbilityInputID);
+
+		AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(StartupAbility, 1, InputID, this));
+	}
+}
+
+float AIMPPlayer::GetStamina() const
+{
+	if (AttributeSet)
+	{
+		return AttributeSet->GetStamina();
+	}
+
+	return 0.f;
+}
+
+float AIMPPlayer::GetStaminaMax() const
+{
+	if (AttributeSet)
+	{
+		return AttributeSet->GetStaminaMax();
+	}
+
+	return 0.f;
+}
+
+float AIMPPlayer::GetStaminaNormalized() const
+{
+	float StaminaMax = GetStaminaMax();
+	float Stamina = GetStamina();
+
+	if (StaminaMax != 0.f)
+	{
+		return Stamina / StaminaMax;
+	}
+
+	return 0.f;
+}
+
+float AIMPPlayer::GetMaxSpeed() const
+{
+	if (bDead)
+	{
+		return 0.f;
+	}
+
+	if (bIsSprinting)
+	{
+		return SprintingSpeed;
+	}
+
+	return InitialWalkSpeed;
 }
 
 void AIMPPlayer::MoveForward(float Value)
@@ -349,6 +448,19 @@ void AIMPPlayer::StopInteractable()
 	}
 }
 
+void AIMPPlayer::StartSprinting()
+{
+	if (!bDead)
+	{
+		bIsSprinting = true;
+	}
+}
+
+void AIMPPlayer::StopSprinting()
+{
+	bIsSprinting = false;
+}
+
 void AIMPPlayer::SwitchToFire()
 {
 	if (!bDead)
@@ -407,14 +519,17 @@ void AIMPPlayer::StartCharging()
 	{
 		bCharging = true;
 
-		bool bHasAmmo = LethalAmmo.Current > 0;
-		bool bValidProjectile = LethalProjectile != nullptr;
-		bool bValidProjectileSocket = LethalProjectileSocket != nullptr;
-
-		if (bHasAmmo) // && bValidProjectile && bValidProjectileSocket)
+		if (PlayerState == EPlayerState::PT_ShootingMode)
 		{
-			float rps = (float)(LethalRoundsPerMinute / 60);
-			GetWorldTimerManager().SetTimer(FireRateHandle, this, &AIMPPlayer::OnShootLethal, 1.f / rps, true, 0.f);
+			bool bHasAmmo = LethalAmmo.Current > 0;
+			bool bValidProjectile = LethalProjectile != nullptr;
+			bool bValidProjectileSocket = LethalProjectileSocket != nullptr;
+
+			if (bHasAmmo) // && bValidProjectile && bValidProjectileSocket)
+			{
+				float rps = (float)(LethalRoundsPerMinute / 60);
+				GetWorldTimerManager().SetTimer(FireRateHandle, this, &AIMPPlayer::OnShootLethal, 1.f / rps, true, 0.f);
+			}
 		}
 	}
 }
@@ -439,11 +554,7 @@ void AIMPPlayer::ModifyPlayerEnergyLevels(EEnergyType EnergyType, float Amount, 
 
 float AIMPPlayer::GetEnergyLevel_Normalized(EEnergyType EnergyType)
 {
-	if (PlayerEnergyLevelsMax[(int)EnergyType] <= 0)
-	{
-		return 0.f;
-	}
-	else
+	if (PlayerEnergyLevelsMax[(int)EnergyType] != 0.f)
 	{
 		return PlayerEnergyLevels[(int)EnergyType] / PlayerEnergyLevelsMax[(int)EnergyType];
 	}
@@ -478,34 +589,9 @@ void AIMPPlayer::Heal(float amount)
 	}
 }
 
-void AIMPPlayer::InitializeAttributes()
+void AIMPPlayer::SetIsSprinting(const bool InValue)
 {
-	if (AbilitySystemComponent.IsValid() && DefaultAttributes)
-	{
-		FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
-		EffectContext.AddSourceObject(this);
-
-		FGameplayEffectSpecHandle SpecHandle = AbilitySystemComponent->MakeOutgoingSpec(DefaultAttributes, 1, EffectContext);
-		if (SpecHandle.IsValid())
-		{
-			FActiveGameplayEffectHandle GEHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
-		}
-	}
-}
-
-void AIMPPlayer::GiveAbilities()
-{
-	for (TSubclassOf<UIMPGameplayAbility>& StartupAbility : DefaultAbilities)
-	{
-		int32 InputID = static_cast<int32>(StartupAbility.GetDefaultObject()->AbilityInputID);
-
-		AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(StartupAbility, 1, InputID, this));
-	}
-}
-
-UAbilitySystemComponent* AIMPPlayer::GetAbilitySystemComponent() const
-{
-	return AbilitySystemComponent.Get();
+	bIsSprinting = InValue;
 }
 
 void AIMPPlayer::OnDrainEnergy_Implementation(float DeltaTime)
@@ -614,14 +700,17 @@ AActor* AIMPPlayer::GetFocusedActor(float WithinDistance)
 
 void AIMPPlayer::UseShootingPlayerMovement(bool InValue)
 {
-	if (InValue)
-	{
-		GetCharacterMovement()->MaxWalkSpeed = 100.f;
-		bUseControllerRotationYaw = true;
-	}
-	else
-	{
-		GetCharacterMovement()->MaxWalkSpeed = InitialWalkSpeed;
-		bUseControllerRotationYaw = false;
-	}
+	GetCharacterMovement()->MaxWalkSpeed = (100.f * InValue) + (InitialWalkSpeed * !InValue);
+	bUseControllerRotationYaw = InValue;
+
+	//if (InValue)
+	//{
+	//	GetCharacterMovement()->MaxWalkSpeed = 100.f;
+	//	bUseControllerRotationYaw = true;
+	//}
+	//else
+	//{
+	//	GetCharacterMovement()->MaxWalkSpeed = InitialWalkSpeed;
+	//	bUseControllerRotationYaw = false;
+	//}
 }

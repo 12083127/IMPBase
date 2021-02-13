@@ -57,7 +57,12 @@ public:
 	float LoseSightRadius;
 
 	// functions
-	void SetInFocus(bool bInFocus);
+	/**
+	 * Enables/disables a glowing outline effect around the Interactable's mesh, so that it appears to be in focus
+	 * @param bInFocus - set to true to draw a glowing outline around the mesh; false will disable the outline
+	 */
+	void SetInFocus(const bool bInFocus);
+
 	void SetIsGoingForward(bool IsGoingForward);
 	void SetIMPController(class AIMPNPCCharacterAIBase* InController);
 

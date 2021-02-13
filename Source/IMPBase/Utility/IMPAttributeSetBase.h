@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AttributeSet.h"
-#include "IMPBase/Components/IMPAbilitySystemComponent.h"
+#include "AbilitySystemComponent.h"
 #include "IMPAttributeSetBase.generated.h"
 
 #define ATTRIBUTE_ACCESSORS(ClassName, PropertyName) \
@@ -25,15 +25,27 @@ public:
 
 	UIMPAttributeSetBase();
 
-	UPROPERTY(BlueprintReadOnly, Category = "IMPBase|Attributes")
+	UPROPERTY(BlueprintReadOnly, Category = "IMP Base|Attributes")
+	/** Current Health Value. NOTE: Make sure to set HealthMax first since Health is being clamped to HealthMax!*/
 	FGameplayAttributeData Health;
 	ATTRIBUTE_ACCESSORS(UIMPAttributeSetBase, Health);
 
-	UPROPERTY(BlueprintReadOnly, Category = "IMPBase|Attributes")
+	UPROPERTY(BlueprintReadOnly, Category = "IMP Base|Attributes")
 	FGameplayAttributeData HealthMax;
 	ATTRIBUTE_ACCESSORS(UIMPAttributeSetBase, HealthMax);
 
-	UPROPERTY(BlueprintReadOnly, Category = "IMPBase|Attributes")
+	UPROPERTY(BlueprintReadOnly, Category = "IMP Base|Attributes")
+	FGameplayAttributeData Stamina;
+	ATTRIBUTE_ACCESSORS(UIMPAttributeSetBase, Stamina);
+
+	UPROPERTY(BlueprintReadOnly, Category = "IMP Base|Attributes")
+	FGameplayAttributeData StaminaMax;
+	ATTRIBUTE_ACCESSORS(UIMPAttributeSetBase, StaminaMax);
+
+	UPROPERTY(BlueprintReadOnly, Category = "IMP Base|Attributes")
 	FGameplayAttributeData DrainRate;
 	ATTRIBUTE_ACCESSORS(UIMPAttributeSetBase, DrainRate);
+
+	// NOTE: should mainly be used for clamping values pre value change. For other actions triggered by attribute change use the predefined delegates
+	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
 };

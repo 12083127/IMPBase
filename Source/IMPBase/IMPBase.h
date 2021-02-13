@@ -23,15 +23,18 @@
 #define ECC_Shootable									ECC_GameTraceChannel2
 
 UENUM(BlueprintType)
+/* Ability Input IDs used by GAS */
 enum class EIMPAbilityInputID : uint8
 {
 	AI_None,
 	AI_Confirm,
 	AI_Cancel,
+	AI_Sprint UMETA(DisplayName = "Sprint"),
 	AI_Drain UMETA(DisplayName = "Drain")
 };
 
 UENUM(BlueprintType)
+/* All energy types for the energy gameplay mechanic */
 enum class EEnergyType : uint8
 {
 	ET_None UMETA(DisplayName = "None"),
@@ -50,6 +53,7 @@ enum class EFactionType : uint8
 };
 
 UENUM(BlueprintType)
+/* Note categories for the player journal. Notes of category "None" will not be added to the journal if picked up! */
 enum class ENoteCategory : uint8
 {
 	NC_None UMETA(DisplayName = "None"),
@@ -97,6 +101,7 @@ struct TGameAttribute
 	}
 };
 
+/* DEPRECATED: replace with TGameAttribute! */
 struct FAttributeFloat
 {
 	float Current;
@@ -121,6 +126,7 @@ struct FAttributeFloat
 	}
 };
 
+/* DEPRECATED: replace with TGameAttribute! */
 struct FAttributeInt
 {
 	int32 Current;

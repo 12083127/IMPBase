@@ -68,9 +68,6 @@ void UIMPEnergyComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 		}
 		else
 		{
-			bDrainable = true;
-			return;
-
 			AIMPNPCCharacterBase* NPC = Cast<AIMPNPCCharacterBase>(GetOwner());
 
 			if (NPC)

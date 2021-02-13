@@ -47,7 +47,7 @@ void AIMPInteractableBase::SetReadyToInteract()
 	OnInteract_Implementation();
 }
 
-void AIMPInteractableBase::SetInFocus(bool bInFocus)
+void AIMPInteractableBase::SetInFocus(const bool bInFocus)
 {
 	Mesh->SetRenderCustomDepth(bInFocus);
 }

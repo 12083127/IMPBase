@@ -11,6 +11,6 @@ public class IMPBase : ModuleRules
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "HeadMountedDisplay" });
 		
 		// manually added plugins after project creation
-		PublicDependencyModuleNames.AddRange(new string[] { "AIModule", "GameplayAbilities", "GameplayTags", "GameplayTasks" });
+		PrivateDependencyModuleNames.AddRange(new string[] { "AIModule", "GameplayAbilities", "GameplayTags", "GameplayTasks" });
 	}
 }
