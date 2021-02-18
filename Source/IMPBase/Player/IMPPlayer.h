@@ -28,6 +28,9 @@ class IMPBASE_API AIMPPlayer : public ACharacter, public IAbilitySystemInterface
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FollowCamera;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "IMP Base", meta = (AllowPrivateAccess = "true"))
+	class UIMPInventoryComponent* Inventory;
+
 	class UAbilitySystemComponent* AbilitySystemComponent;
 	class UIMPAttributeSetBase* AttributeSet;
 
@@ -150,18 +153,21 @@ public:
 	FORCEINLINE EEnergyType GetActiveElement() const { return ActiveElement; }
 
 	UFUNCTION(BlueprintCallable)
-	/** Returns whether the player is dead or not */
+	/* Returns whether the player is dead or not */
 	FORCEINLINE bool IsDead() const { return bDead; }
 
 	UFUNCTION(BlueprintCallable)
-	/** Returns whether the player is sprinting or not */
+	/* Returns whether the player is sprinting or not */
 	FORCEINLINE bool IsSprinting() const { return bIsSprinting; }
 
-	/** Returns CameraBoom subobject **/
+	/* Returns CameraBoom subobject */
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	
-	/** Returns FollowCamera subobject **/
+	/* Returns FollowCamera subobject */
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
+	/* Returns FollowCamera subobject */
+	FORCEINLINE class UIMPInventoryComponent* GetInventoryComponent() const { return Inventory; }
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 

@@ -6,6 +6,7 @@
 #include "Engine/DataTable.h"
 #include "GameFramework/PlayerState.h"
 #include "IMPBase/IMPBase.h"
+#include "IMPBase/Utility/IMPInventoryItemBase.h"
 #include "IMPPlayerState.generated.h"
 
 USTRUCT(BlueprintType)
@@ -38,6 +39,45 @@ public:
 	}
 };
 
+USTRUCT(BlueprintType)
+struct FIMPInventoryItem : public FTableRowBase
+{
+
+	GENERATED_USTRUCT_BODY()
+
+public:
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	FName ItemID;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	FText ItemName;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	FText ItemDescription;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = 0))
+	int32 ItemValue;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = 1))
+	int32 ItemStack;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = 0.f))
+	float ItemWeight;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	TSubclassOf<UIMPInventoryItemBase> ItemBase;
+
+	// operator overloading to check for duplicates
+	bool operator==(const FIMPInventoryItem& Item) const
+	{
+		if (ItemID == Item.ItemID)
+			return true;
+		else
+			return false;
+	}
+};
+
 /**
  * 
  */
@@ -50,7 +90,7 @@ public:
 
 	AIMPPlayerState();
 	
-	UPROPERTY(VisibleAnywhere, Category = "IMP Base")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "IMP Base")
 	/** Holds all the notes the player has found */
 	TArray<FIMPNoteEntry> PlayerNoteJournal;
 

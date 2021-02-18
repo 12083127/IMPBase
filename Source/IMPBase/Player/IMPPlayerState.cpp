@@ -31,7 +31,7 @@ void AIMPPlayerState::AddNoteToPlayerJournal(const FIMPNoteEntry Note)
 		}
 		else
 		{
-			UE_LOG(LogDataTable, Warning, TEXT("Note ID: %i Has a category of None. Please check the entry and set a valid category."), Note.NoteID);
+			UE_LOG(LogDataTable, Warning, TEXT("Note ID: %i Has a category of None. Please check the entry and set a valid category. Note has not been added"), Note.NoteID);
 		}
 	}
 }

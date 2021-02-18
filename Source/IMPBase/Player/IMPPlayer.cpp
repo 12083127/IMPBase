@@ -19,6 +19,7 @@
 #include "IMPBase/AI/IMPNPCCharacterAIBase.h"
 
 #include "IMPBase/Components/IMPEnergyComponent.h"
+#include "IMPBase/Components/IMPInventoryComponent.h"
 
 #include "IMPBase/Utility/IMPAttributeSetBase.h"
 #include "IMPBase/Utility/IMPInteractInterface.h"
@@ -80,6 +81,8 @@ AIMPPlayer::AIMPPlayer()
 	AbilitySystemComponent->SetIsReplicated(false);
 
 	AttributeSet = CreateDefaultSubobject<UIMPAttributeSetBase>(TEXT("AttributeSet"));
+
+	Inventory = CreateDefaultSubobject<UIMPInventoryComponent>(TEXT("InventoryComponent"));
 
 	/*Init IMP Player Stats*/
 	CurrentInteractable = nullptr;

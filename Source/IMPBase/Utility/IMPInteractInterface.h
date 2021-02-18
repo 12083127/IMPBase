@@ -13,9 +13,7 @@ class UIMPInteractInterface : public UInterface
 	GENERATED_BODY()
 };
 
-/**
- * 
- */
+/* Interaction Interface functions used by every interactable object inside the game */
 class IMPBASE_API IIMPInteractInterface
 {
 	GENERATED_BODY()

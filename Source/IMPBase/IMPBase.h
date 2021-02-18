@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Engine/DataTable.h"
+//#include "Engine/DataTable.h"
 
 // project macros
 #define print(color, text)								if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.5f, color, TEXT(text), false)
