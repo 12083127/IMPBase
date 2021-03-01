@@ -42,6 +42,7 @@ const FName AIMPPlayer::TurnBinding("Turn");
 const FName AIMPPlayer::TurnRateBinding("TurnRate");
 const FName AIMPPlayer::LookUpBinding("LookUp");
 const FName AIMPPlayer::LookUpRateBinding("LookUpRate");
+const FName AIMPPlayer::CharMenuBinding("CharMenu");
 
 // Sets default values
 AIMPPlayer::AIMPPlayer()
@@ -115,6 +116,7 @@ AIMPPlayer::AIMPPlayer()
 	bDead = false;
 	bIsSprinting = false;
 	bUseImbuedAmmo = false;
+	bInCharMenu = false;
 }
 
 void AIMPPlayer::BeginPlay()
@@ -269,8 +271,8 @@ void AIMPPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 	PlayerInputComponent->BindAxis("MoveForward", this, &AIMPPlayer::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AIMPPlayer::MoveRight);
 
-	PlayerInputComponent->BindAction(InteractBinding, IE_Pressed, this, &AIMPPlayer::UseInteractable);
-	PlayerInputComponent->BindAction(InteractBinding, IE_Released, this, &AIMPPlayer::StopInteractable);
+	PlayerInputComponent->BindAction(InteractBinding, IE_Pressed, this, &AIMPPlayer::UseInteractable).bExecuteWhenPaused = true;
+	PlayerInputComponent->BindAction(InteractBinding, IE_Released, this, &AIMPPlayer::StopInteractable).bExecuteWhenPaused = true;
 	PlayerInputComponent->BindAction(DrainBinding, IE_Pressed, this, &AIMPPlayer::StartDraining);
 	PlayerInputComponent->BindAction(DrainBinding, IE_Released, this, &AIMPPlayer::StopDraining);
 	PlayerInputComponent->BindAction(ChargeBinding, IE_Pressed, this, &AIMPPlayer::StartCharging);
@@ -282,6 +284,7 @@ void AIMPPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 	PlayerInputComponent->BindAction(SwitchElementWaterBinding, IE_Pressed, this, &AIMPPlayer::SwitchToWater);
 	PlayerInputComponent->BindAction(SwitchModeBinding, IE_Pressed, this, &AIMPPlayer::SwitchMode);
 	PlayerInputComponent->BindAction(ImbuementSwitchBinding, IE_Pressed, this, &AIMPPlayer::SwitchImbuement);
+	PlayerInputComponent->BindAction(CharMenuBinding, IE_Pressed, this, &AIMPPlayer::ToggleCharMenu).bExecuteWhenPaused = true;
 
 	// We have 2 versions of the rotation bindings to handle different kinds of devices differently
 	// "turn" handles devices that provide an absolute delta, such as a mouse.
@@ -491,6 +494,11 @@ void AIMPPlayer::SwitchToWater()
 void AIMPPlayer::SwitchImbuement()
 {
 	bUseImbuedAmmo = !bUseImbuedAmmo;
+}
+
+void AIMPPlayer::ToggleCharMenu()
+{
+	bInCharMenu = !bInCharMenu;
 }
 
 void AIMPPlayer::SwitchMode()

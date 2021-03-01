@@ -2,7 +2,9 @@
 
 
 #include "IMPInventoryItemBase.h"
+#include "Components/Widget.h"
 #include "IMPBase/Components/IMPInventoryComponent.h"
+#include "IMPBase/IMPBase.h"
 
 UIMPInventoryItemBase::UIMPInventoryItemBase()
 {
@@ -12,6 +14,20 @@ UIMPInventoryItemBase::UIMPInventoryItemBase()
 	ItemValue = 0;
 	ItemStack = 1;
 	ItemStackSize = 1;
+
+	printf(FColor::Red, "Item created: %s", *GetName());
+
+	ClearEntryWidget();
+}
+
+void UIMPInventoryItemBase::SetEntryWidget(UWidget* InWidget)
+{
+	CurrentEntryWidget = InWidget;
+}
+
+void UIMPInventoryItemBase::ClearEntryWidget()
+{
+	CurrentEntryWidget = nullptr;
 }
 
 void UIMPInventoryItemBase::SetOwner(UIMPInventoryComponent* NewOwner)
@@ -26,9 +42,17 @@ void UIMPInventoryItemBase::SetWorld(UWorld* NewWorld)
 
 void UIMPInventoryItemBase::MarkForDestruction()
 {
+	ClearEntryWidget();
 	SetOwner(nullptr);
 	SetWorld(nullptr);
-	//MarkPendingKill();
+	MarkPendingKill();
+}
+
+void UIMPInventoryItemBase::BeginDestroy()
+{
+	Super::BeginDestroy();
+
+	logstring("%s: Item destroyed", *ItemName.ToString());
 }
 
 #if WITH_EDITOR

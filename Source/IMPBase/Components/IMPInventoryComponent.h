@@ -36,10 +36,13 @@ public:
 	bool RemoveItem(class UIMPInventoryItemBase* Item);
 
 	UFUNCTION(BlueprintCallable)
+	bool TransferItem(class UIMPInventoryItemBase* Item, UIMPInventoryComponent* TargetInventory, bool bTakeWholeStack = false);
+
+	UFUNCTION(BlueprintCallable)
 	void Sort();
 
 	UFUNCTION(BlueprintCallable)
-	class UIMPInventoryItemBase* FindItem(TSubclassOf<class UIMPInventoryItemBase> ItemClass);
+	class UIMPInventoryItemBase* FindItem(TSubclassOf<class UIMPInventoryItemBase> ItemClass) const;
 
 protected:
 
@@ -47,5 +50,5 @@ protected:
 	
 private:
 
-	int32 GetValidStackIndex(class UIMPInventoryItemBase* Item);
+	int32 GetValidStackIndex(const class UIMPInventoryItemBase* Item) const;
 };

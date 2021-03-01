@@ -33,6 +33,9 @@ public:
 	EInventoryItemCategory ItemCategory;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	class UStaticMesh* ItemMesh;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	FText ItemName;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
@@ -56,11 +59,20 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual class UWorld* GetWorld() const { return World; }
 
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE class UWidget* GetEntryWidget() const { return CurrentEntryWidget; }
+
+	UFUNCTION(BlueprintCallable)
+	void SetEntryWidget(class UWidget* InWidget);
+
+	UFUNCTION(BlueprintCallable)
+	void ClearEntryWidget();
+
 	void SetOwner(class UIMPInventoryComponent* NewOwner);
 	void SetWorld(class UWorld* NewWorld);
 	void MarkForDestruction();
 	
-	// operator overloading to check for duplicates and sorting algorithms
+	// operator overloading to check for duplicates and to enable sorting algorithms
 	bool operator==(const UIMPInventoryItemBase& Item) const
 	{
 		if (ItemID == Item.ItemID)
@@ -78,10 +90,15 @@ public:
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 #endif
 
+protected:
+	virtual void BeginDestroy();
+
 private:
 
 	UPROPERTY(Transient)
 	class UWorld* World;
 
 	class UIMPInventoryComponent* Owner;
+	class UWidget* CurrentEntryWidget;
+
 };

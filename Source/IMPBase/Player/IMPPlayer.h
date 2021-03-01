@@ -53,6 +53,7 @@ public:
 	static const FName TurnRateBinding;
 	static const FName LookUpBinding;
 	static const FName LookUpRateBinding;
+	static const FName CharMenuBinding;
 
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
@@ -265,6 +266,7 @@ private:
 	bool bCharging;
 	bool bIsSprinting;
 	bool bUseImbuedAmmo;
+	bool bInCharMenu;
 
 	float InitialWalkSpeed; // const?
 
@@ -276,6 +278,7 @@ private:
 	void StartCharging();
 	void StopCharging();
 	void SwitchImbuement();
+	void ToggleCharMenu();
 	void ShootLethalProjetile(float Distance);
 	AActor* GetFocusedActor(float WithinDistance);
 	void UseShootingPlayerMovement(bool InValue);

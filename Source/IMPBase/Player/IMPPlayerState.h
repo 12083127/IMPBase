@@ -86,16 +86,16 @@ class IMPBASE_API AIMPPlayerState : public APlayerState
 {
 	GENERATED_BODY()
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "IMP Base", meta = (AllowPrivateAccess = "true"))
+	/** Holds all the notes the player has found */
+	TArray<class UIMPJournalEntryObject*> PlayerNoteJournal;
+
 public:
 
 	AIMPPlayerState();
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "IMP Base")
-	/** Holds all the notes the player has found */
-	TArray<FIMPNoteEntry> PlayerNoteJournal;
-
 	UFUNCTION(BlueprintCallable)
-	/** Checks if the Note you want to add is valid and adds it to the players journal.
+	/** Checks if the Note you want to add is valid and adds it to the players journal as an IMPJournalEntryObject.
 	 *  @param Note - The note to be added.
 	 */
 	void AddNoteToPlayerJournal(const FIMPNoteEntry Note);
@@ -105,6 +105,9 @@ public:
 	 *  @param NoteID - NoteID of the note you are looking for.
 	 */
 	FIMPNoteEntry FindNoteEntry(const FName NoteID) const;
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE TArray<class UIMPJournalEntryObject*> GetPlayerNoteJournal() const { return PlayerNoteJournal; }
 
 	//FORCEINLINE class UDataTable* GetNoteJournalDB() const { return NoteDataTable; }
 

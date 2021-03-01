@@ -4,6 +4,7 @@
 #include "IMPPlayerState.h"
 #include "IMPBase/Components/IMPAbilitySystemComponent.h"
 #include "IMPBase/Utility/IMPAttributeSetBase.h"
+#include "IMPBase/Utility/IMPJournalEntryObject.h"
 
 AIMPPlayerState::AIMPPlayerState()
 {
@@ -27,7 +28,9 @@ void AIMPPlayerState::AddNoteToPlayerJournal(const FIMPNoteEntry Note)
 	{
 		if (Note.NoteCategory != ENoteCategory::NC_None)
 		{
-			PlayerNoteJournal.AddUnique(Note);
+			UIMPJournalEntryObject* NoteEntry = NewObject<UIMPJournalEntryObject>();
+			NoteEntry->SetNoteEntryData(Note);
+			PlayerNoteJournal.AddUnique(NoteEntry);
 		}
 		else
 		{
