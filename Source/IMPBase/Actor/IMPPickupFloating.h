@@ -18,11 +18,11 @@ public:
 
 	AIMPPickupFloating();
 
-	/** Speed per tick this Pickup will rotate around its Z-Axis */
+	/* Speed per tick this Pickup will rotate around its Z-Axis */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "IMPBase|Interaction|Pickup")
 	float RotationSpeed;
 
-	/** The Z-Range this Pickup will float up and down */
+	/* The Z-Range this Pickup will float up and down */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "IMPBase|Interaction|Pickup")
 	float ZBoppinRange;
 

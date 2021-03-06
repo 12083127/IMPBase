@@ -3,12 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "IMPBase/Actor/IMPInteractableBase.h"
+#include "IMPBase/Actor/IMPInteractableStatic.h"
 #include "IMPPickupBase.generated.h"
 
 /** Abstract base pickup class that every pickup inherits from */
-UCLASS(Abstract)
-class IMPBASE_API AIMPPickupBase : public AIMPInteractableBase
+UCLASS(Abstract, NotBlueprintable)
+class IMPBASE_API AIMPPickupBase : public AIMPInteractableStatic
 {
 	GENERATED_BODY()
 
@@ -17,7 +17,7 @@ public:
 	AIMPPickupBase();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "IMP Base|Interaction|Pickup")
-	/** Whether or not to destroy the Actor when the event OnPickup() fires */
+	/* Whether or not to destroy the Actor when the event OnPickup() fires */
 	bool bDestroyOnPickup;
 
 	UFUNCTION(BlueprintNativeEvent)

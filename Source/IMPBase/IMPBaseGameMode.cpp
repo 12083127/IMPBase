@@ -1,15 +1,41 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "IMPBaseGameMode.h"
-#include "Player/IMPPlayer.h"
+#include "IMPBase/Actor/IMPPreviewCaptureBase.h"
 #include "UObject/ConstructorHelpers.h"
 
 AIMPBaseGameMode::AIMPBaseGameMode()
 {
-	// set default pawn class to our Blueprinted character
-	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Game/DemoContent/Player/BP_IMPPlayer"));
-	if (PlayerPawnBPClass.Class != NULL)
+
+}
+
+bool AIMPBaseGameMode::GetNoteEntryFromDB(const FName NoteID, FIMPNoteEntry& OutEntry)
+{
+	if (NoteDataTable)
 	{
-		DefaultPawnClass = PlayerPawnBPClass.Class;
+		const FIMPNoteEntry* NoteEntry = NoteDataTable->FindRow<FIMPNoteEntry>(NoteID, "");
+
+		if (NoteEntry)
+		{
+			OutEntry = *NoteEntry;
+			return true;
+		}
+
+		return false;
 	}
+	else
+	{
+		UE_LOG(LogDataTable, Error, TEXT("No Data Table Reference set inside the Player State!"));
+		return false;
+	}
+}
+
+void AIMPBaseGameMode::SetItemPreviewActor(AIMPPreviewCaptureBase* PreviewActor)
+{
+	ItemPreviewActor = PreviewActor;
+}
+
+void AIMPBaseGameMode::SetPlayerPreviewActor(AIMPPreviewCaptureBase* PreviewActor)
+{
+	PlayerPreviewActor = PreviewActor;
 }

@@ -13,13 +13,16 @@ class UIMPInteractInterface : public UInterface
 	GENERATED_BODY()
 };
 
-/* Interaction Interface functions used by every interactable object inside the game */
+/* Interface providing useful function templates used and called by every interactable object inside the game */
 class IMPBASE_API IIMPInteractInterface
 {
 	GENERATED_BODY()
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
+
+	void SetInFocus(const bool bInFocus);
+
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "IMPBase|Interface|Interaction")
 	void OnInteract();
 

@@ -7,9 +7,8 @@
 #include "IMPBase/Utility/IMPInteractInterface.h"
 #include "IMPInteractableBase.generated.h"
 
-/** Abstract Interactable class to define custom default behaviour for all interactable game objects derived from this class */
-
-UCLASS(Abstract)
+/* Abstract Interactable class to define custom default behaviour for all interactable game objects derived from this class */
+UCLASS(Abstract, NotBlueprintable)
 class IMPBASE_API AIMPInteractableBase : public AActor, public IIMPInteractInterface
 {
 	GENERATED_BODY()
@@ -17,16 +16,6 @@ class IMPBASE_API AIMPInteractableBase : public AActor, public IIMPInteractInter
 public:	
 	// Sets default values for this actor's properties
 	AIMPInteractableBase();
-
-	/**
-	 * Enables/disables a glowing outline effect around the Interactable's mesh, so that it appears to be in focus
-	 * @param bInFocus - set to true to draw a glowing outline around the mesh; false will disable the outline
-	 */
-	void SetInFocus(const bool bInFocus);
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "IMP Base|StaticMesh")
-	/** Reference to the Interactables StaticMeshComponent */
-	class UStaticMeshComponent* Mesh;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "IMP Base|Interaction")
 	bool bUseInteractionTimeSpan;
@@ -49,6 +38,8 @@ public:
 	virtual void OnInteractStop_Implementation();
 
 	void ResetInteractionTimer();
+
+	virtual void SetInFocus(const bool bInFocus);
 
 protected:
 	// Called when the game starts or when spawned

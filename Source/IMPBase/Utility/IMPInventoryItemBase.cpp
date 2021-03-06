@@ -15,7 +15,7 @@ UIMPInventoryItemBase::UIMPInventoryItemBase()
 	ItemStack = 1;
 	ItemStackSize = 1;
 
-	printf(FColor::Red, "Item created: %s", *GetName());
+	//printf(FColor::Red, "Item created: %s", *GetName());
 
 	ClearEntryWidget();
 }
@@ -48,11 +48,15 @@ void UIMPInventoryItemBase::MarkForDestruction()
 	MarkPendingKill();
 }
 
+void UIMPInventoryItemBase::OnUse()
+{
+}
+
 void UIMPInventoryItemBase::BeginDestroy()
 {
 	Super::BeginDestroy();
 
-	logstring("%s: Item destroyed", *ItemName.ToString());
+	//logstring("%s: Item destroyed", *ItemName.ToString());
 }
 
 #if WITH_EDITOR

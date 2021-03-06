@@ -11,8 +11,6 @@
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
 
-//#include "GameplayEffect.h"
-
 #include "IMPBase/Actor/IMPEnergyActor.h"
 #include "IMPBase/Actor/IMPInteractableBase.h"
 #include "IMPBase/AI/IMPNPCCharacterBase.h"
@@ -713,15 +711,4 @@ void AIMPPlayer::UseShootingPlayerMovement(bool InValue)
 {
 	GetCharacterMovement()->MaxWalkSpeed = (100.f * InValue) + (InitialWalkSpeed * !InValue);
 	bUseControllerRotationYaw = InValue;
-
-	//if (InValue)
-	//{
-	//	GetCharacterMovement()->MaxWalkSpeed = 100.f;
-	//	bUseControllerRotationYaw = true;
-	//}
-	//else
-	//{
-	//	GetCharacterMovement()->MaxWalkSpeed = InitialWalkSpeed;
-	//	bUseControllerRotationYaw = false;
-	//}
 }

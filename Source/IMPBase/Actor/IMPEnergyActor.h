@@ -4,14 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "IMPBase/IMPBase.h"
-#include "IMPBase/Actor/IMPInteractableBase.h"
+#include "IMPBase/Actor/IMPInteractableStatic.h"
 #include "IMPEnergyActor.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class IMPBASE_API AIMPEnergyActor : public AIMPInteractableBase
+class IMPBASE_API AIMPEnergyActor : public AIMPInteractableStatic
 {
 	GENERATED_BODY()
 	

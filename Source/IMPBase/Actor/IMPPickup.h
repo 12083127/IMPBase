@@ -17,11 +17,11 @@ public:
 	AIMPPickup();
 
 	UPROPERTY(EditAnywhere)
-	/** Triggering volume for actors to collide with to trigger the pickup */
+	/* Triggering volume for actors to collide with to trigger the pickup */
 	class UBoxComponent* PickupTrigger;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "IMP Base|Interaction|Pickup")
-	/** Only these Actors will be able to collect this Pickup */
+	/* Only these Actors will be able to collect this Pickup */
 	TArray<TSubclassOf<AActor>> AllowedActors;
 
 private:

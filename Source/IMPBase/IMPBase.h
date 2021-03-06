@@ -3,7 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-//#include "Engine/DataTable.h"
+#include "Engine/DataTable.h"
+#include "IMPBase.generated.h"
 
 // project macros
 #define print(color, text)								if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.5f, color, TEXT(text), false)
@@ -30,7 +31,7 @@ enum class EIMPAbilityInputID : uint8
 	AI_Confirm,
 	AI_Cancel,
 	AI_Sprint UMETA(DisplayName = "Sprint"),
-	AI_Drain UMETA(DisplayName = "Drain")
+	AI_Drain UMETA(DisplayName = "Drain"),
 };
 
 UENUM(BlueprintType)
@@ -43,7 +44,8 @@ enum class EEnergyType : uint8
 	ET_Water UMETA(DisplayName = "Water"),
 };
 
-UENUM(BlueprintType) // rename to ENPCBehavior; possible move to IMPEnemyNPC.h?
+UENUM(BlueprintType) 
+/* rename to ENPCBehavior; possible move to IMPEnemyNPC.h? */
 enum class EFactionType : uint8
 {
 	FT_None UMETA(DisplayName = "None"),
@@ -62,6 +64,40 @@ enum class ENoteCategory : uint8
 	NC_Mystery UMETA(DisplayName = "Mystery")
 };
 
+USTRUCT(BlueprintType)
+/* Structure that holds all necessary data for every journal entry the player can find */
+struct FIMPNoteEntry : public FTableRowBase
+{
+
+	GENERATED_USTRUCT_BODY()
+
+public:
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		int32 NoteID;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FText NoteHeading;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FText NoteBody;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		ENoteCategory NoteCategory;
+
+	// operator overloading to check for duplicates
+	bool operator==(const FIMPNoteEntry& Note) const
+	{
+		if (NoteID == Note.NoteID)
+			return true;
+		else
+			return false;
+	}
+};
+
+/** Templated structure providing a variable with a Max and a Current value and some utility functions. 
+* Useful for every attribute that is set using a max value and a current value clamped on max. e.g. Health... 
+*/
 template <typename T>
 struct TGameAttribute
 {

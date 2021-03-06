@@ -93,7 +93,7 @@ bool UIMPInventoryComponent::AddItemByClass(TSubclassOf<class UIMPInventoryItemB
 	return false;
 }
 
-bool UIMPInventoryComponent::RemoveItem(UIMPInventoryItemBase* Item)
+bool UIMPInventoryComponent::RemoveItem(UIMPInventoryItemBase* Item, const bool bDestroyItem)
 {
 	if (Item)
 	{
@@ -109,8 +109,12 @@ bool UIMPInventoryComponent::RemoveItem(UIMPInventoryItemBase* Item)
 			else
 			{
 				Items.RemoveSingle(Item);
-				Item->MarkForDestruction();
-				Item = nullptr;
+				
+				if (bDestroyItem)
+				{
+					Item->MarkForDestruction();
+					Item = nullptr;
+				}
 
 				OnInventoryUpdated.Broadcast();
 				return true;
@@ -145,6 +149,21 @@ bool UIMPInventoryComponent::TransferItem(class UIMPInventoryItemBase* Item, UIM
 		}
 
 		OnInventoryUpdated.Broadcast();
+		return true;
+	}
+
+	return false;
+}
+
+bool UIMPInventoryComponent::TransferAll(UIMPInventoryComponent* TargetInventory)
+{
+	if (TargetInventory)
+	{
+		for (UIMPInventoryItemBase* Item : Items)
+		{
+			TransferItem(Item, TargetInventory, true);
+		}
+
 		return true;
 	}
 

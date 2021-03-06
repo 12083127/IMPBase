@@ -7,13 +7,12 @@
 // Sets default values
 AIMPInteractableBase::AIMPInteractableBase()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 
-	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
-	Mesh->SetupAttachment(RootComponent);
+	//Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
+	//Mesh->SetupAttachment(RootComponent);
 
 	bUseInteractionTimeSpan = false;
 	InteractTimeSpan = 5.f;
@@ -47,10 +46,10 @@ void AIMPInteractableBase::SetReadyToInteract()
 	OnInteract_Implementation();
 }
 
-void AIMPInteractableBase::SetInFocus(const bool bInFocus)
-{
-	Mesh->SetRenderCustomDepth(bInFocus);
-}
+//void AIMPInteractableBase::SetInFocus(const bool bInFocus)
+//{
+//	Mesh->SetRenderCustomDepth(bInFocus);
+//}
 
 void AIMPInteractableBase::OnInteract_Implementation()
 {
@@ -78,4 +77,8 @@ void AIMPInteractableBase::ResetInteractionTimer()
 {
 	GetWorldTimerManager().ClearTimer(InteractTimerHandle);
 	bReadyToInteract = !bUseInteractionTimeSpan;
+}
+
+void AIMPInteractableBase::SetInFocus(const bool bInFocus)
+{
 }
