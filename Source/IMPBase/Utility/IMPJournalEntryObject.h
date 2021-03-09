@@ -23,9 +23,9 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	/* @return Gets all data stored in the JournalEntryObject */
-	FORCEINLINE FIMPNoteEntry GetJournalEntryData() const { return NoteEntry; }
+	FORCEINLINE FIMPNoteEntry GetJournalEntryData() const { return NoteData; }
 
 private:
 
-	FIMPNoteEntry NoteEntry;
+	FIMPNoteEntry NoteData;
 };

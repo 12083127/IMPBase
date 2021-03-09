@@ -72,20 +72,6 @@ public:
 	/*@return Reference to the game world the item resides */
 	virtual class UWorld* GetWorld() const { return World; }
 
-	UFUNCTION(BlueprintCallable)
-	/*@return Reference to the List Entry Widget this item currently represents in the GUI */
-	FORCEINLINE class UWidget* GetEntryWidget() const { return CurrentEntryWidget; }
-
-	UFUNCTION(BlueprintCallable)
-	/** Used to set the current List Entry Widget this item represents in the GUI
-	* @param InWidget - Reference to the widget that is set to be the current widget
-	*/
-	void SetEntryWidget(class UWidget* InWidget);
-
-	UFUNCTION(BlueprintCallable)
-	/* Clears the current widget reference, setting it to nullptr. */
-	void ClearEntryWidget();
-
 	void SetOwner(class UIMPInventoryComponent* NewOwner);
 	void SetWorld(class UWorld* NewWorld);
 	void MarkForDestruction();
@@ -103,7 +89,7 @@ public:
 
 	friend bool operator<(const UIMPInventoryItemBase& a, const UIMPInventoryItemBase& b)
 	{
-		return (uint8)a.ItemCategory < (uint8)b.ItemCategory && a.ItemStack < b.ItemStack;
+		return StaticCast<uint8>(a.ItemCategory) < StaticCast<uint8>(b.ItemCategory) && a.ItemStack < b.ItemStack;
 	}
 
 #if WITH_EDITOR
@@ -118,7 +104,7 @@ private:
 	UPROPERTY(Transient)
 	class UWorld* World;
 
+	UPROPERTY()
 	class UIMPInventoryComponent* Owner;
-	class UWidget* CurrentEntryWidget;
 
 };

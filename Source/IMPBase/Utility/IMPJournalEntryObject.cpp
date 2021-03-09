@@ -7,5 +7,5 @@ UIMPJournalEntryObject::UIMPJournalEntryObject(){}
 
 void UIMPJournalEntryObject::SetJournalEntryData(const FIMPNoteEntry InNote)
 {
-	NoteEntry = InNote;
+	NoteData = InNote;
 }

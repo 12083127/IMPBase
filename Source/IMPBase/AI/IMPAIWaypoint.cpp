@@ -17,12 +17,14 @@ AIMPAIWaypoint::AIMPAIWaypoint()
 
 	static ConstructorHelpers::FObjectFinder<UTexture2D> spriteLookUp(TEXT("/Engine/EditorMaterials/TargetIcon"));
 
+#if WITH_EDITOR
 	if (spriteLookUp.Succeeded())
 	{
 		EDSprite->SetSprite(spriteLookUp.Object);
 		EDSprite->SetEditorScale(0.5f);
 		EDSprite->SetupAttachment(RootComponent);
 	}
+#endif
 
 	// set default attributes
 	Duration = 2.f;

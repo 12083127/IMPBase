@@ -2,6 +2,7 @@
 
 
 #include "IMPInteractableBase.h"
+#include "Kismet/GameplayStatics.h"
 #include "IMPBase/IMPBase.h"
 
 // Sets default values
@@ -11,74 +12,26 @@ AIMPInteractableBase::AIMPInteractableBase()
 
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 
-	//Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
-	//Mesh->SetupAttachment(RootComponent);
-
-	bUseInteractionTimeSpan = false;
-	InteractTimeSpan = 5.f;
+	DisplayName = FText::FromString("Interactable");
 }
 
 // Called when the game starts or when spawned
 void AIMPInteractableBase::BeginPlay()
 {
 	Super::BeginPlay();
-
-	bReadyToInteract = !bUseInteractionTimeSpan;
 }
 
-float AIMPInteractableBase::GetInteractionTimeNormalized() const
+bool AIMPInteractableBase::PlayInteractionSound(USoundBase* const Sound)
 {
-	if (InteractTimeSpan <= 0.f)
+	if (Sound)
 	{
-		return 1.f;
-	}
-	else
-	{
-		return (GetWorldTimerManager().GetTimerElapsed(InteractTimerHandle) / InteractTimeSpan);
+		AudioComponent = UGameplayStatics::SpawnSoundAtLocation(this, Sound, GetActorLocation());
+		return true;
 	}
 
-	return 0.f;
+	return false;
 }
 
-void AIMPInteractableBase::SetReadyToInteract()
-{
-	bReadyToInteract = true;
-	OnInteract_Implementation();
-}
+void AIMPInteractableBase::SetInFocus(const bool bInFocus){}
 
-//void AIMPInteractableBase::SetInFocus(const bool bInFocus)
-//{
-//	Mesh->SetRenderCustomDepth(bInFocus);
-//}
-
-void AIMPInteractableBase::OnInteract_Implementation()
-{
-	if (!bReadyToInteract)
-	{
-		GetWorldTimerManager().SetTimer(InteractTimerHandle, this, &AIMPInteractableBase::SetReadyToInteract, InteractTimeSpan, false, InteractTimeSpan);
-		return;
-	}
-	else
-	{
-		printc(1, FColor::Red, "Interacted!");
-		ResetInteractionTimer();
-	}
-}
-
-void AIMPInteractableBase::OnInteractStop_Implementation()
-{
-	if (bUseInteractionTimeSpan && GetWorldTimerManager().IsTimerActive(InteractTimerHandle))
-	{
-		ResetInteractionTimer();
-	}
-}
-
-void AIMPInteractableBase::ResetInteractionTimer()
-{
-	GetWorldTimerManager().ClearTimer(InteractTimerHandle);
-	bReadyToInteract = !bUseInteractionTimeSpan;
-}
-
-void AIMPInteractableBase::SetInFocus(const bool bInFocus)
-{
-}
+void AIMPInteractableBase::OnInteract_Implementation(APawn* Caller){}

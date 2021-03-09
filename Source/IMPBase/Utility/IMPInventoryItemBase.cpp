@@ -16,18 +16,6 @@ UIMPInventoryItemBase::UIMPInventoryItemBase()
 	ItemStackSize = 1;
 
 	//printf(FColor::Red, "Item created: %s", *GetName());
-
-	ClearEntryWidget();
-}
-
-void UIMPInventoryItemBase::SetEntryWidget(UWidget* InWidget)
-{
-	CurrentEntryWidget = InWidget;
-}
-
-void UIMPInventoryItemBase::ClearEntryWidget()
-{
-	CurrentEntryWidget = nullptr;
 }
 
 void UIMPInventoryItemBase::SetOwner(UIMPInventoryComponent* NewOwner)
@@ -42,15 +30,12 @@ void UIMPInventoryItemBase::SetWorld(UWorld* NewWorld)
 
 void UIMPInventoryItemBase::MarkForDestruction()
 {
-	ClearEntryWidget();
 	SetOwner(nullptr);
 	SetWorld(nullptr);
 	MarkPendingKill();
 }
 
-void UIMPInventoryItemBase::OnUse()
-{
-}
+void UIMPInventoryItemBase::OnUse(){}
 
 void UIMPInventoryItemBase::BeginDestroy()
 {

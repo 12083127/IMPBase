@@ -2,14 +2,14 @@
 
 
 #include "IMPPickupInteractable.h"
+#include "IMPBase/IMPBase.h"
 
 AIMPPickupInteractable::AIMPPickupInteractable()
 {
 	Mesh->SetCollisionProfileName("BlockAllDynamic");
 }
 
-void AIMPPickupInteractable::OnInteract_Implementation()
+void AIMPPickupInteractable::OnInteract_Implementation(APawn* Caller)
 {
-	Super::OnInteract_Implementation();
 	OnPickUp();
 }

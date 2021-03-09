@@ -7,50 +7,44 @@
 #include "IMPBase/Utility/IMPInteractInterface.h"
 #include "IMPInteractableBase.generated.h"
 
-/* Abstract Interactable class to define custom default behaviour for all interactable game objects derived from this class */
+/* Abstract Interactable class to defines custom default behaviour for all interactable game objects derived from this class */
 UCLASS(Abstract, NotBlueprintable)
 class IMPBASE_API AIMPInteractableBase : public AActor, public IIMPInteractInterface
 {
 	GENERATED_BODY()
 	
 public:	
-	// Sets default values for this actor's properties
+
 	AIMPInteractableBase();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "IMP Base|Interaction")
-	bool bUseInteractionTimeSpan;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	/* Exposed name of the interactable object. */
+	FText DisplayName;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "IMP Base|Interaction")
-	float InteractTimeSpan;
-
-	UFUNCTION(BlueprintCallable)
-	float GetInteractionTimeNormalized() const;
-
-	UFUNCTION(BlueprintCallable)
-	FORCEINLINE bool IsReadyToInteract() const { return bReadyToInteract; }
+	/** Enables/disables a glowing outline effect around the Interactable's mesh, so that it appears to be in focus
+	* @param bInFocus - set to true to draw a glowing outline around the mesh; false will disable the outline
+	*/
+	virtual void SetInFocus(const bool bInFocus);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	/** A placeholder Interface event that defines what happens when interacting with the Interactable. */
-	void OnInteract();
-	virtual void OnInteract_Implementation();
-
-	void OnInteractStop();
-	virtual void OnInteractStop_Implementation();
-
-	void ResetInteractionTimer();
-
-	virtual void SetInFocus(const bool bInFocus);
+	void OnInteract(APawn* Caller);
+	virtual void OnInteract_Implementation(APawn* Caller);
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "IMP Base|Activate")
+	/* Sound that plays upon activating the object. */
+	class USoundBase* ActivateSound;
+
+	bool PlayInteractionSound(class USoundBase* const Sound);
+
+	UPROPERTY()
+	class UAudioComponent* AudioComponent;
+
 private:
 
-	FTimerHandle InteractTimerHandle;
 
-	bool bReadyToInteract;
-
-	void SetReadyToInteract();
 
 };

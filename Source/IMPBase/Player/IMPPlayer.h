@@ -53,8 +53,7 @@ public:
 	static const FName TurnRateBinding;
 	static const FName LookUpBinding;
 	static const FName LookUpRateBinding;
-	static const FName CharMenuBinding;
-
+	
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
 	float BaseTurnRate;
@@ -97,6 +96,7 @@ public:
 	float DrainingRate;
 	float ChargingRate;
 
+	UPROPERTY()
 	AActor* FocusedActor;
 
 	UPROPERTY(BlueprintReadOnly)
@@ -251,13 +251,20 @@ private:
 	FAttributeInt LethalAmmo;
 
 	FTimerHandle FireRateHandle;
-
+	
+	UPROPERTY()
 	class AIMPInteractableBase* CurrentInteractable;
+	
+	UPROPERTY()
 	class AIMPInteractableBase* LastKnownInteractable;
-
+	
+	UPROPERTY()
 	class AIMPNPCCharacterBase* CurrentNPC;
+	
+	UPROPERTY()
 	class AIMPNPCCharacterBase* LastKnownNPC;
 
+	UPROPERTY()
 	class UIMPEnergyComponent* EnergyComponent;
 
 	bool bDead;

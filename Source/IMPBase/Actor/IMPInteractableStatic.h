@@ -9,7 +9,7 @@
 /**
  * 
  */
-UCLASS(Abstract)
+UCLASS(Abstract, Blueprintable)
 class IMPBASE_API AIMPInteractableStatic : public AIMPInteractableBase
 {
 	GENERATED_BODY()
@@ -18,12 +18,18 @@ public:
 
 	AIMPInteractableStatic();
 
-	/** Enables/disables a glowing outline effect around the Interactable's mesh, so that it appears to be in focus
-	 * @param bInFocus - set to true to draw a glowing outline around the mesh; false will disable the outline
-	 */
 	virtual void SetInFocus(const bool bInFocus) override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "IMP Base")
 	/* Reference to the Interactables StaticMeshComponent */
 	class UStaticMeshComponent* Mesh;
+
+	void OnInteract(APawn* Caller);
+	virtual void OnInteract_Implementation(APawn* Caller);
+
+protected:
+
+	virtual void BeginPlay() override;
+
+private:
 };

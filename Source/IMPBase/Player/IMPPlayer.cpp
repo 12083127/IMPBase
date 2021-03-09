@@ -40,7 +40,6 @@ const FName AIMPPlayer::TurnBinding("Turn");
 const FName AIMPPlayer::TurnRateBinding("TurnRate");
 const FName AIMPPlayer::LookUpBinding("LookUp");
 const FName AIMPPlayer::LookUpRateBinding("LookUpRate");
-const FName AIMPPlayer::CharMenuBinding("CharMenu");
 
 // Sets default values
 AIMPPlayer::AIMPPlayer()
@@ -187,7 +186,7 @@ void AIMPPlayer::Tick(float DeltaTime)
 	// clear focus if we know the last interactable/npc and it is not the current interactable/npc
 	if (LastKnownInteractable && LastKnownInteractable != CurrentInteractable)
 	{
-		LastKnownInteractable->ResetInteractionTimer();
+		//LastKnownInteractable->ResetInteractionTimer();
 		LastKnownInteractable->SetInFocus(false);
 	}
 	if (LastKnownNPC && LastKnownNPC != CurrentNPC)
@@ -282,7 +281,6 @@ void AIMPPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 	PlayerInputComponent->BindAction(SwitchElementWaterBinding, IE_Pressed, this, &AIMPPlayer::SwitchToWater);
 	PlayerInputComponent->BindAction(SwitchModeBinding, IE_Pressed, this, &AIMPPlayer::SwitchMode);
 	PlayerInputComponent->BindAction(ImbuementSwitchBinding, IE_Pressed, this, &AIMPPlayer::SwitchImbuement);
-	PlayerInputComponent->BindAction(CharMenuBinding, IE_Pressed, this, &AIMPPlayer::ToggleCharMenu).bExecuteWhenPaused = true;
 
 	// We have 2 versions of the rotation bindings to handle different kinds of devices differently
 	// "turn" handles devices that provide an absolute delta, such as a mouse.
@@ -432,24 +430,30 @@ void AIMPPlayer::UseInteractable()
 {
 	if (CurrentInteractable)
 	{
-		IIMPInteractInterface* Interface = Cast<IIMPInteractInterface>(CurrentInteractable);
-		if (Interface)
+		if (CurrentInteractable->GetClass()->ImplementsInterface(UIMPInteractInterface::StaticClass()))
 		{
-			Interface->Execute_OnInteract(CurrentInteractable);
+			IIMPInteractInterface::Execute_OnInteract(CurrentInteractable, this);
+			//CurrentInteractable->OnInteract(this);
+			//IIMPInteractInterface* Interface = Cast<IIMPInteractInterface>(CurrentInteractable);
+			//if (Interface)
+			//{
+			//	Interface->Execute_OnInteract(CurrentInteractable);
+			//}
 		}
 	}
 }
 
 void AIMPPlayer::StopInteractable()
 {
-	if (CurrentInteractable)
-	{
-		IIMPInteractInterface* Interface = Cast<IIMPInteractInterface>(CurrentInteractable);
-		if (Interface)
-		{
-			Interface->Execute_OnInteractStop(CurrentInteractable);
-		}
-	}
+	//if (CurrentInteractable)
+	//{
+	//	CurrentInteractable->OnInteractStop();
+	//	IIMPInteractInterface* Interface = Cast<IIMPInteractInterface>(CurrentInteractable);
+	//	if (Interface)
+	//	{
+	//		Interface->Execute_OnInteractStop(CurrentInteractable);
+	//	}
+	//}
 }
 
 void AIMPPlayer::StartSprinting()

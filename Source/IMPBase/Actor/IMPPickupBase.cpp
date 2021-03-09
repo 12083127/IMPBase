@@ -2,6 +2,7 @@
 
 
 #include "IMPPickupBase.h"
+#include "Components/AudioComponent.h"
 
 AIMPPickupBase::AIMPPickupBase()
 {
@@ -16,4 +17,14 @@ void AIMPPickupBase::OnPickUp_Implementation()
 	{
 		Destroy();
 	}
+
+	if (AudioComponent)
+	{
+		if (AudioComponent->IsPlaying())
+		{
+			return;
+		}
+	}
+
+	PlayInteractionSound(ActivateSound);
 }

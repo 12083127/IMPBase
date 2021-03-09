@@ -8,9 +8,9 @@ public class IMPBase : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "HeadMountedDisplay" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "HeadMountedDisplay", "InputCore" });
 		
 		// manually added plugins after project creation
-		PrivateDependencyModuleNames.AddRange(new string[] { "AIModule", "GameplayAbilities", "GameplayTags", "GameplayTasks", "UMG" });
+		PrivateDependencyModuleNames.AddRange(new string[] { "AIModule", "GameplayAbilities", "GameplayTags", "GameplayTasks", "UMG", "Slate", "SlateCore" });
 	}
 }

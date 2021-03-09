@@ -7,6 +7,7 @@
 #include "IMPEquipmentItemBase.generated.h"
 
 UENUM(BlueprintType)
+/* All available Equipment slots available to the game. */
 enum class EEquipmentSlot : uint8
 {
 	ES_Head UMETA(Displayname = "Head"),
@@ -15,9 +16,7 @@ enum class EEquipmentSlot : uint8
 	ES_MainWeapon UMETA(Displayname = "Main Weapon"),
 	LENGTH UMETA(Hidden)
 };
-/**
- * 
- */
+/* Basic class for all inventory items that are equippable. */
 UCLASS()
 class IMPBASE_API UIMPEquipmentItemBase : public UIMPInventoryItemBase
 {
@@ -26,7 +25,12 @@ class IMPBASE_API UIMPEquipmentItemBase : public UIMPInventoryItemBase
 public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	/* Defines which equipment slot this item will occupy.*/
 	EEquipmentSlot ItemSlotType;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = 0))
+	/* Protective value this armor piece provides */
+	int32 ArmorRating;
 
 	virtual void OnUse() override;
 

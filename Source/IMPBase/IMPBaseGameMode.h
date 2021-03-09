@@ -24,13 +24,16 @@ public:
 	*/
 	bool GetNoteEntryFromDB(const FName NoteID, FIMPNoteEntry& OutEntry);
 
-	UFUNCTION(BlueprintCallable)
+	//UFUNCTION(BlueprintCallable)
 	// remove blueprint callable when finished prototyping!
 	void SetItemPreviewActor(class AIMPPreviewCaptureBase* const PreviewActor);
 
-	UFUNCTION(BlueprintCallable)
+	//UFUNCTION(BlueprintCallable)
 	// remove blueprint callable when finished prototyping!
 	void SetPlayerPreviewActor(class AIMPPreviewCaptureBase* const PreviewActor);
+
+	UFUNCTION(BlueprintCallable)
+	bool SetGamePaused(const bool bPaused);
 
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE class AIMPPreviewCaptureBase* GetItemPreviewActor() const { return ItemPreviewActor; }
@@ -46,7 +49,10 @@ protected:
 
 private:
 
+	UPROPERTY()
 	class AIMPPreviewCaptureBase* ItemPreviewActor;
+
+	UPROPERTY()
 	class AIMPPreviewCaptureBase* PlayerPreviewActor;
 };
 

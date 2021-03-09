@@ -14,7 +14,7 @@ class IMPBASE_API UIMPInventoryComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditDefaultsOnly, Instanced, Category = "IMP Base|Inventory", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, Instanced, Category = "IMP Base|Inventory", meta = (AllowPrivateAccess = "true"))
 	/* Use this to define items that will get added to this component when initially spawned */
 	TArray<class UIMPInventoryItemBase*> StartupItems;
 

@@ -39,3 +39,15 @@ void AIMPBaseGameMode::SetPlayerPreviewActor(AIMPPreviewCaptureBase* PreviewActo
 {
 	PlayerPreviewActor = PreviewActor;
 }
+
+bool AIMPBaseGameMode::SetGamePaused(const bool bPauseGame)
+{
+	APlayerController* PC = GetWorld()->GetFirstPlayerController();
+
+	if (PC)
+	{
+		return PC->SetPause(bPauseGame);
+	}
+
+	return false;
+}

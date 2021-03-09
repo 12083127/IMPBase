@@ -38,7 +38,7 @@ UENUM(BlueprintType)
 /* All energy types for the energy gameplay mechanic */
 enum class EEnergyType : uint8
 {
-	ET_None UMETA(DisplayName = "None"),
+	ET_None UMETA(DisplayName = "None", Hidden),
 	ET_Electric UMETA(DisplayName = "Electric"),
 	ET_Fire UMETA(DisplayName = "Fire"),
 	ET_Water UMETA(DisplayName = "Water"),
@@ -48,7 +48,7 @@ UENUM(BlueprintType)
 /* rename to ENPCBehavior; possible move to IMPEnemyNPC.h? */
 enum class EFactionType : uint8
 {
-	FT_None UMETA(DisplayName = "None"),
+	FT_None UMETA(DisplayName = "None", Hidden),
 	FT_Enemy UMETA(DisplayName = "Enemy"),
 	FT_Neutral UMETA(DisplayName = "Neutral"),
 	FT_Friendly UMETA(DisplayName = "Friendly")
@@ -58,7 +58,7 @@ UENUM(BlueprintType)
 /* Note categories for the player journal. Notes of category "None" will not be added to the journal if picked up! */
 enum class ENoteCategory : uint8
 {
-	NC_None UMETA(DisplayName = "None"),
+	NC_None UMETA(DisplayName = "None", Hidden),
 	NC_Story UMETA(DisplayName = "Story"),
 	NC_Treasure UMETA(DisplayName = "Treasure"),
 	NC_Mystery UMETA(DisplayName = "Mystery")

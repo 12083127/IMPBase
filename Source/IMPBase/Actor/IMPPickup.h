@@ -7,7 +7,7 @@
 #include "IMPPickup.generated.h"
 
 /** An "arcade-like" pickup that the player can collect by colliding with its PickupTrigger */
-UCLASS()
+UCLASS(Blueprintable)
 class IMPBASE_API AIMPPickup : public AIMPPickupBase
 {
 	GENERATED_BODY()
@@ -20,7 +20,7 @@ public:
 	/* Triggering volume for actors to collide with to trigger the pickup */
 	class UBoxComponent* PickupTrigger;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "IMP Base|Interaction|Pickup")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "IMP Base")
 	/* Only these Actors will be able to collect this Pickup */
 	TArray<TSubclassOf<AActor>> AllowedActors;
 

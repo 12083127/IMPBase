@@ -21,11 +21,6 @@ class IMPBASE_API IIMPInteractInterface
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 
-	void SetInFocus(const bool bInFocus);
-
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "IMPBase|Interface|Interaction")
-	void OnInteract();
-
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "IMPBase|Interface|Interaction")
-	void OnInteractStop();
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "IMPBase|Interface|Interaction")
+	void OnInteract(APawn* Caller);
 };

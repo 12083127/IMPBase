@@ -43,6 +43,7 @@ protected:
 
 private:
 
+	UPROPERTY()
 	TArray<UIMPEquipmentItemBase*> Equipment;
 
 	int32 GetSlotIndex(const EEquipmentSlot Slot) const;

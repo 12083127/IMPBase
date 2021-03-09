@@ -40,9 +40,7 @@ AIMPPreviewCaptureBase::AIMPPreviewCaptureBase()
 	bIdleRotationActive = false;
 }
 
-void AIMPPreviewCaptureBase::UpdatePreviewMesh_Implementation(UIMPInventoryItemBase* ActiveItem)
-{
-}
+void AIMPPreviewCaptureBase::UpdatePreviewMesh_Implementation(UIMPInventoryItemBase* ActiveItem){}
 
 // Called when the game starts or when spawned
 void AIMPPreviewCaptureBase::BeginPlay()
