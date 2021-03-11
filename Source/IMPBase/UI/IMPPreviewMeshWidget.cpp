@@ -5,6 +5,7 @@
 #include "IMPBase/IMPBaseGameMode.h"
 #include "IMPBase/Actor/IMPPreviewCaptureBase.h"
 #include "Input/Reply.h"
+#include "Blueprint/WidgetLayoutLibrary.h"
 
 void UIMPPreviewMeshWidget::NativeOnInitialized()
 {
@@ -133,7 +134,9 @@ FReply UIMPPreviewMeshWidget::OnMouseButton(const bool bClicked)
 		FVector2D MouseLoc;
 		PC->GetMousePosition(MouseLoc.X, MouseLoc.Y);
 
-		PreviewActor->SetUserRotation(bClicked, MouseLoc);
+		const float DPIScale = 1/UWidgetLayoutLibrary::GetViewportScale(GetWorld());
+
+		PreviewActor->SetUserRotation(bClicked, MouseLoc * DPIScale);
 
 		return FReply::Handled();
 	}

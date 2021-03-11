@@ -20,6 +20,7 @@ public:
 	AIMPPlayerController();
 
 	static const FName CharMenuBinding;
+	static const FName GameMenuBinding;
 
 	UFUNCTION(BlueprintCallable)
 	/*Checks if the Note you want to add is valid and adds it to the players journal as an IMPJournalEntryObject.
@@ -35,6 +36,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	/*@return Gets all entries inside the players journal. */
 	FORCEINLINE TArray<class UIMPJournalEntryObject*> GetPlayerNoteJournal() const { return PlayerNoteJournal; }
+
+	UFUNCTION(BlueprintCallable)
+	void ToggleGameMenu();
+
+	UFUNCTION(BlueprintCallable)
+	void QuitGame();
 
 	void ShowContainerScreen(class AIMPContainerBase* const Container);
 	void HideContainerScreen();
@@ -58,4 +65,5 @@ private:
 	TArray<class UIMPJournalEntryObject*> PlayerNoteJournal;
 
 	void TogglePlayerMenu();
+
 };

@@ -28,3 +28,7 @@ void AIMPPickupBase::OnPickUp_Implementation()
 
 	PlayInteractionSound(ActivateSound);
 }
+
+//void AIMPPickupBase::OnInteract_Implementation(APawn* Caller)
+//{
+//}

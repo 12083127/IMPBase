@@ -60,30 +60,52 @@ void AIMPHUD::HidePlayerMenu()
 
 void AIMPHUD::ShowGameMenu()
 {
-	ShowWidget(GameMenuClass, GameMenu);
-}
-
-void AIMPHUD::HideGameMenu()
-{
-	HideWidget(GameMenu);
-}
-
-void AIMPHUD::ShowContainerScreen(AIMPContainerBase* const Container)
-{
-	//ShowWidget(ContainerScreenClass, ContainerScreen);
-
-	if (ShowWidget(ContainerScreenClass, ContainerScreen))
+	if (ShowWidget(GameMenuClass, GameMenu))
 	{
 		HidePlayerHUD();
 
 		FInputModeGameAndUI InputMode;
-		InputMode.SetWidgetToFocus(ContainerScreen->GetCachedWidget());
+		InputMode.SetWidgetToFocus(GameMenu->GetCachedWidget());
 		InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
 		InputMode.SetHideCursorDuringCapture(false);
 
 		PlayerOwner->bShowMouseCursor = true;
 		PlayerOwner->SetInputMode(InputMode);
 		PlayerOwner->SetPause(true);
+	}
+}
+
+void AIMPHUD::HideGameMenu()
+{
+	HideWidget(GameMenu);
+	ShowPlayerHUD();
+	PlayerOwner->bShowMouseCursor = false;
+	PlayerOwner->SetInputMode(FInputModeGameOnly());
+	PlayerOwner->SetPause(false);
+}
+
+void AIMPHUD::ShowContainerScreen()
+{
+	//ShowWidget(ContainerScreenClass, ContainerScreen);
+
+	const bool bPlayerMenuInactive = !IsMenuScreenActive(PlayerMenu);
+	const bool bGameMenuInactive = !IsMenuScreenActive(GameMenu);
+
+	if (bPlayerMenuInactive && bGameMenuInactive)
+	{
+		if (ShowWidget(ContainerScreenClass, ContainerScreen))
+		{
+			HidePlayerHUD();
+
+			FInputModeGameAndUI InputMode;
+			InputMode.SetWidgetToFocus(ContainerScreen->GetCachedWidget());
+			InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+			InputMode.SetHideCursorDuringCapture(false);
+
+			PlayerOwner->bShowMouseCursor = true;
+			PlayerOwner->SetInputMode(InputMode);
+			PlayerOwner->SetPause(true);
+		}
 	}
 }
 
@@ -106,11 +128,43 @@ void AIMPHUD::TogglePlayerMenu()
 		if (IsMenuScreenActive(PlayerMenu))
 		{
 			HidePlayerMenu();
+			return;
 		}
 		else
 		{
 			ShowPlayerMenu();
+			return;
 		}
+	}
+}
+
+void AIMPHUD::ToggleGameMenu()
+{
+	const bool bPlayerMenuInactive = !IsMenuScreenActive(PlayerMenu);
+	const bool bContainerScreenInactive = !IsMenuScreenActive(ContainerScreen);
+
+	if (bPlayerMenuInactive && bContainerScreenInactive)
+	{
+		if (IsMenuScreenActive(GameMenu))
+		{
+			HideGameMenu();
+			return;
+		}
+		else
+		{
+			ShowGameMenu();
+			return;
+		}
+	}
+	else if (!bPlayerMenuInactive)
+	{
+		HidePlayerMenu();
+		return;
+	}
+	else if (!bContainerScreenInactive)
+	{
+		HideContainerScreen();
+		return;
 	}
 }
 

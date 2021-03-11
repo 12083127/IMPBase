@@ -26,4 +26,7 @@ public:
 	  */
 	void OnPickUp();
 	virtual void OnPickUp_Implementation();
+
+	//void OnInteract(APawn* Caller);
+	//virtual void OnInteract_Implementation(APawn* Caller);
 };

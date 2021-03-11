@@ -3,6 +3,7 @@
 
 #include "IMPPickup.h"
 #include "Components/BoxComponent.h"
+#include "IMPBase/IMPBase.h"
 
 AIMPPickup::AIMPPickup()
 {

@@ -8,6 +8,7 @@
 #include "IMPBase/Utility/IMPJournalEntryObject.h"
 
 const FName AIMPPlayerController::CharMenuBinding("CharMenu");
+const FName AIMPPlayerController::GameMenuBinding("GameMenu");
 
 AIMPPlayerController::AIMPPlayerController()
 {
@@ -31,6 +32,7 @@ void AIMPPlayerController::SetupInputComponent()
 	Super::SetupInputComponent();
 
 	InputComponent->BindAction(CharMenuBinding, IE_Pressed, this, &AIMPPlayerController::TogglePlayerMenu).bExecuteWhenPaused = true;
+	InputComponent->BindAction(GameMenuBinding, IE_Pressed, this, &AIMPPlayerController::ToggleGameMenu).bExecuteWhenPaused = true;
 }
 
 void AIMPPlayerController::TogglePlayerMenu()
@@ -59,12 +61,25 @@ bool AIMPPlayerController::AddNewJournalEntry(const FIMPNoteEntry Note)
 	}
 }
 
+void AIMPPlayerController::ToggleGameMenu()
+{
+	if (PlayerHUD)
+	{
+		PlayerHUD->ToggleGameMenu();
+	}
+}
+
+void AIMPPlayerController::QuitGame()
+{
+	this->ConsoleCommand("quit");
+}
+
 void AIMPPlayerController::ShowContainerScreen(AIMPContainerBase* const Container)
 {
 	if (PlayerHUD)
 	{
 		ActiveContainerRef = Container;
-		PlayerHUD->ShowContainerScreen(Container);
+		PlayerHUD->ShowContainerScreen();
 	}
 }
 

@@ -61,13 +61,14 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	/* Shows Container Screen by adding it to the viewport. */
-	void ShowContainerScreen(class AIMPContainerBase* const Container);
+	void ShowContainerScreen();
 
 	UFUNCTION(BlueprintCallable)
 	/* Hides Container Screen by removing it from the viewport. */
 	void HideContainerScreen();
 
 	void TogglePlayerMenu();
+	void ToggleGameMenu();
 
 protected:
 
